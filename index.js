@@ -1,9 +1,8 @@
 var patternList = [];
 var userChoosenPattern = [];
 
-var level = 0;
+var level = 1;
 var isStarted = false;
-
 
 $("div.btn").click(function (){
 
@@ -18,16 +17,61 @@ $("div.btn").click(function (){
     checkAnswer(userChoosenPattern.length - 1);
 });
 
-
-
 $(document).on("keydown", function (){
     if(!isStarted){
-        isStarted = true;
+        $("#level-title").text("Level " + level);
         randomPattern();
+        isStarted = true;
     }
 });
 
+function randomPattern(){
 
+    userChoosenPattern = [];
+
+    var divColors = ["green", "red", "yellow", "blue"];
+    var randomNum = Math.floor(Math.random() * 4);
+    var randomColor = divColors[randomNum];
+
+    patternList.push(randomColor);
+
+    // to show a random pattern
+    $("#" + randomColor).fadeIn(100).fadeOut(100).fadeIn(100);
+
+    //to add audio to the button
+    playAudio(randomColor);
+
+    if(isStarted){
+        level++;
+        $("#level-title").text("Level "+ level);
+    }
+}   
+
+function checkAnswer(currentLevel){
+
+    if(patternList[currentLevel] === userChoosenPattern[currentLevel]){
+
+        if(userChoosenPattern.length === patternList.length){
+            setTimeout(function (){
+                if(isStarted){
+                    randomPattern();
+                }
+            }, 1000);
+            
+        }
+    }else{
+
+        playAudio("wrong");
+        $("body").addClass("game-over");
+        $("h1").text("Game Over, Press Any Key to Restart.");
+        
+        setTimeout(function (){
+            $("body").removeClass("game-over");
+        },200);
+
+        startOver();
+    }   
+}
 
 function playAudio(color){
     switch(color){
@@ -56,8 +100,6 @@ function playAudio(color){
     // audio.play();
 }
 
-
-
 function showAnimation(color){
     $("#" + color).addClass("pressed");
 
@@ -66,58 +108,8 @@ function showAnimation(color){
     },150);
 }
 
-
-
-function randomPattern(){
-
-    userChoosenPattern = [];
-
-    var divColors = ["green", "red", "yellow", "blue"];
-    var randomNum = Math.floor(Math.random() * 4);
-    var randomColor = divColors[randomNum];
-
-    patternList.push(randomColor);
-
-    // to show a random pattern
-    $("#" + randomColor).fadeIn(100).fadeOut(100).fadeIn(100);
-
-    //to add audio to the button
-    playAudio(randomColor);
-
-    level++;
-
-    $("h1").text("Level "+ level);  
-}   
-
-
-
-function checkAnswer(currentLevel){
-
-    if(patternList[currentLevel] === userChoosenPattern[currentLevel]){
-
-        if(userChoosenPattern.length === patternList.length){
-            setTimeout(function (){
-                randomPattern();
-            }, 1000);
-            
-        }
-    }else{
-
-        playAudio("wrong");
-        $("h1").text("Game Over, Press Any Key to Restart.");
-        $("body").addClass("game-over");
-
-        setTimeout(function (){
-            $("body").removeClass("game-over");
-        },200);
-
-        startOver();
-    }   
-}
-
-
 function startOver(){
     patternList = [];
-    level = 0;
+    level = 1;
     isStarted = false;
 }
